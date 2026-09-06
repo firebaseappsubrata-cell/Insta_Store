@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Insta Store</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #000;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    width: 100%;
+    max-width: 360px;
+    margin: 90px auto;
+    padding: 25px;
+    text-align: center;
+}
+
+.logo {
+    font-size: 38px;
+    font-weight: bold;
+    margin-bottom: 35px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin: 6px 0;
+    border: 1px solid #555;
+    border-radius: 6px;
+    background: #121212;
+    color: white;
+    font-size: 14px;
+}
+
+button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 14px;
+    border: 0;
+    border-radius: 7px;
+    background: #1877f2;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+button:active {
+    opacity: 0.7;
+}
+
+#message {
+    margin-top: 20px;
+    font-size: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo">Insta Store</div>
+
+    <input
+        id="username"
+        type="text"
+        placeholder="Username or phone number"
+        autocomplete="username"
+    >
+
+    <input
+        id="password"
+        type="password"
+        placeholder="Password"
+        autocomplete="current-password"
+    >
+
+    <button onclick="login()">Continue</button>
+
+    <div id="message"></div>
+
+</div>
+
+<script>
+
+function getDeviceInfo() {
+
+    const ua = navigator.userAgent;
+
+    let device = "Unknown";
+
+    if (/Android/i.test(ua)) {
+        device = "Android";
+    } else if (/iPhone|iPad|iPod/i.test(ua)) {
+        device = "iPhone/iPad";
+    } else if (/Windows/i.test(ua)) {
+        device = "Windows";
+    } else if (/Mac/i.test(ua)) {
+        device = "Mac";
+    } else if (/Linux/i.test(ua)) {
+        device = "Linux";
+    }
+
+    return {
+        device: device,
+        browser: navigator.userAgent,
+        language: navigator.language,
+        loginTime: new Date().toISOString()
+    };
+}
+
+
+function login() {
+
+    const username =
+        document.getElementById("username").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const message =
+        document.getElementById("message");
+
+    if (!username || !password) {
+        message.textContent =
+            "Please enter your username and password.";
+        return;
+    }
+
+    /*
+       IMPORTANT:
+       Password is NOT saved or sent anywhere here.
+       Real authentication should be handled by
+       Firebase Authentication / Supabase Auth / your backend.
+    */
+
+    const loginInfo = {
+        username: username,
+        ...getDeviceInfo()
+    };
+
+    console.log("Login information:", loginInfo);
+
+    message.textContent = "Login successful.";
+
+    // यहाँ बाद में आपके असली authentication system
+    // को connect किया जा सकता है.
+}
+
+</script>
+
+</body>
+</html>
